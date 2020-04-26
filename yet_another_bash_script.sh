@@ -91,8 +91,8 @@ done
 shift $((OPTIND - 1))
 
 # deal with required options (getopts cannot do that)
-# die if file not defined
-[[ -z "${my_file}" ]] && die "Filename required (-f option)"
+# die if file argument is empty
+[[ -z "${my_file}" ]] && die "Filename is required (-f option)"
 
 # use printf instead of echo command
 my_array=("Given file: " "${my_file}")
