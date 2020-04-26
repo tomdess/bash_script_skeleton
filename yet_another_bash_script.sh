@@ -44,7 +44,7 @@ function installed {
 
 # die and exit with code 1
 function die {
-  >&2 echo "Fatal: ${@}"
+  >&2 printf '%s %s\n' "Fatal: " "${@}"
   exit 1
 }
 
@@ -55,7 +55,7 @@ function die {
 
 
 # check for required commands
-deps=(curl nc dig)
+deps=(curl nc dig checkerr)
 for dep in "${deps[@]}"; do
   installed "${dep}" || die "Missing '${dep}'"
 done
