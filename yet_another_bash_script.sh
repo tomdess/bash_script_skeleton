@@ -26,11 +26,11 @@ shopt -s extglob
 [[ "${BASH_VERSINFO[0]}" -lt 4 ]] && die "Bash >=4 required"
 
 ################################################################################
-### variables
+### variables and defaults
 ################################################################################
 VERBOSE=${VERBOSE:-0}
 STAMP=${STAMP:-$(date +%s)}
-
+my_file=""
 
 
 ################################################################################
@@ -48,6 +48,16 @@ function die {
   exit 1
 }
 
+# usage function
+function usage {
+  usage="$(basename "$0") [-h] [-f file] -- program with a file parameter
+
+where:
+    -h  show this help text
+    -f  gives the filename"
+  printf '%s\n' "${usage}"  
+}
+
 
 ################################################################################
 ### MAIN
@@ -55,18 +65,41 @@ function die {
 
 
 # check for required commands
-deps=(curl nc dig checkerr)
+deps=(curl nc dig)
 for dep in "${deps[@]}"; do
   installed "${dep}" || die "Missing '${dep}'"
 done
 
+# parse options
+while getopts ':hf:' option; do
+  case "$option" in
+    h) usage
+       exit
+       ;;
+    f) my_file=$OPTARG
+       ;;
+    :) printf 'missing argument for -%s\n' "$OPTARG" >&2
+       usage
+       exit 1
+       ;;
+   \?) printf 'illegal option: -%s\n' "$OPTARG" >&2
+       usage
+       exit 1
+       ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+# deal with required options (getopts cannot do that)
+# die if file not defined
+[[ -z "${my_file}" ]] && die "Filename required (-f option)"
+
 # use printf instead of echo command
-my_array=(uno due tre)
-printf '%s\n' "VERBOSE=${VERBOSE}"
-printf '%s %s\n' "VERBOSE=${VERBOSE}" "STAMP=${STAMP}"
-printf '%s\n' "my_array=${my_array[*]}"
+my_array=("Given file: " "${my_file}")
+printf '%s\n' "${my_array[*]}"
 
-
+# remaining options
+printf '%s %s\n' "Remaining arguments: " "${@}"
 
 # exit
 exit 0
