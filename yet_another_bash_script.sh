@@ -29,7 +29,7 @@ shopt -s extglob
 ### variables and defaults
 ################################################################################
 VERBOSE=${VERBOSE:-0}
-STAMP=${STAMP:-$(date +%s)}
+STAMP=${STAMP:-$(date --utc +%FT%TZ)}
 my_file=""
 
 
