@@ -28,7 +28,7 @@ shopt -s extglob
 ################################################################################
 ### variables and defaults
 ################################################################################
-VERBOSE=${VERBOSE:-0}
+VERBOSE=${VERBOSE:-0} # assign 0 as default to VERBOSE variable
 STAMP=${STAMP:-$(date --utc +%FT%TZ)}
 my_file=""
 
@@ -71,12 +71,16 @@ for dep in "${deps[@]}"; do
 done
 
 # parse options
-while getopts ':hf:' option; do
+# if an option dot not require an argument remove
+# the char : after it in getopts definition
+while getopts ':hf:v' option; do
   case "$option" in
     h) usage
        exit
        ;;
     f) my_file=$OPTARG
+       ;;
+    v) VERBOSE=1
        ;;
     :) printf 'missing argument for -%s\n' "$OPTARG" >&2
        usage
@@ -100,6 +104,11 @@ printf '%s\n' "${my_array[*]}"
 
 # remaining options
 printf '%s %s\n' "Remaining arguments: " "${@}"
+
+# deal with an options with no arguments
+if [ ${VERBOSE} -gt 0 ]; then
+  printf 'Verbose mode enabled\n';
+fi
 
 # exit
 exit 0
