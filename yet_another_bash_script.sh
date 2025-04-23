@@ -22,9 +22,6 @@ set -euo pipefail
 # enable extended pathname expansion (e.g. $ ls !(*.jpg|*.gif))
 shopt -s extglob
 
-# min bash 4 version
-[[ "${BASH_VERSINFO[0]}" -lt 4 ]] && die "Bash >=4 required"
-
 ################################################################################
 ### variables and defaults
 ################################################################################
@@ -50,11 +47,12 @@ function die {
 
 # usage function
 function usage {
-  usage="$(basename "$0") [-h] [-f file] -- program with a file parameter
+  usage="$(basename "$0") [-h] [-v] -f file -- program with a file parameter
 
 where:
     -h  show this help text
-    -f  gives the filename"
+    -v  enabe verbose mode
+    -f  gives the filename [REQUIRED]"
   printf '%s\n' "${usage}"  
 }
 
@@ -63,6 +61,11 @@ where:
 ### MAIN
 ################################################################################
 
+#Store script start time
+start_time=$(date +%s)
+
+# min bash 4 version
+[[ "${BASH_VERSINFO[0]}" -lt 4 ]] && die "Bash >=4 required"
 
 # check for required commands
 deps=(curl nc dig)
@@ -90,6 +93,8 @@ while getopts ':hf:v' option; do
        usage
        exit 1
        ;;
+   *)  usage
+       exit 1
   esac
 done
 shift $((OPTIND - 1))
@@ -109,6 +114,14 @@ printf '%s %s\n' "Remaining arguments: " "${@}"
 if [ ${VERBOSE} -gt 0 ]; then
   printf 'Verbose mode enabled\n';
 fi
+
+# let's sleep a bit
+sleep 2
+
+# calculate and print elapsed time since start
+end_time=$(date +%s)
+elapsed=$(( end_time - start_time ))
+eval "echo Elapsed time : $(date -ud "@$elapsed" +'$((%s/3600/24)) days %H hr %M min %S sec')"
 
 # exit
 exit 0
