@@ -115,8 +115,8 @@ if [ ${VERBOSE} -gt 0 ]; then
   printf 'Verbose mode enabled\n';
 fi
 
-# let's sleep a bit
-sleep 2
+# let's sleep a bit, a random number of milliseconds
+sleep 0.$[ $((RANDOM % 1000)) + 1 ]
 
 # calculate and print elapsed time since start
 end_time=$(date +%s)
